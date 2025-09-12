@@ -129,13 +129,29 @@ export default function Carousel() {
                 ease: "none",
                 scrollTrigger: {
                     trigger: chartsSectionRef.current,
-                    start: "top 0%",
-                    end: `top -500%`,
+                    start: "top 15%",
+                    end: `top -700%`,
                     scrub: 1,
                     pin: true
                 }
             });
         }, chartsSectionRef);
+
+        const navbar = document.querySelector('nav');
+        if (navbar) {
+            gsap.to(navbar, {
+                opacity: 0,
+                duration: 0.5,
+                scrollTrigger: {
+                    trigger: chartsSectionRef.current,
+                    start: "top -10%",
+                    end: "top -700%",
+                    scrub: true,
+                    onLeave: () => gsap.to(navbar, { opacity: 0, duration: 0.3 }),
+                    onLeaveBack: () => gsap.to(navbar, { opacity: 1, duration: 0.3 }),
+                }
+            });
+        }
 
         return () => ctx.revert();
     })
@@ -144,27 +160,27 @@ export default function Carousel() {
         <section className="py-30 p-20 bg-white">
             <div className="text-center mb-16 px-4" id="title">
                 <DecryptedText
-                    text="Market Analytics"
+                    text="Analitiche di Mercato"
                     animateOn="view"
                     revealDirection="center"
                     className="text-4xl md:text-5xl font-extrabold text-slate-700 mb-4"
                 />
                 <br />
                 <ShinyText
-                    text="Real-time insights powered by TurtleAI"
+                    text="Dati in tempo reale, powered by TurtleAI"
                     disabled={false}
-                    speed={3}
+                    speed={30}
                     className="text-lg md:text-xl font-medium mt-3"
                 />
             </div>
 
-            <div className="flex m-10" ref={chartsSectionRef}>
+            <div className="flex " ref={chartsSectionRef}>
                 {/* S&P 500 Chart */}
                 <div
                     ref={el => chartsRef.current[0] = el}
-                    className="flex-shrink-0 w-screen h-[450px] flex items-center justify-center"
+                    className="flex-shrink-0 w-screen h-[550px] flex items-center justify-center"
                 >
-                    <div className="w-full max-w-xl mx-5">
+                    <div className="w-[50%] max-w-xl mx-5">
                         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-lg m-5">
                             <div className="bg-gradient-to-br from-emerald-50 to-white border border-emerald-200 rounded-2xl p-6 shadow-md overflow-hidden">
                                 <h3 className="text-xl font-bold text-slate-700 mb-4 text-center">
@@ -181,9 +197,9 @@ export default function Carousel() {
                 {/* Crypto Market Cap Chart */}
                 <div
                     ref={el => chartsRef.current[1] = el}
-                    className="flex-shrink-0 w-screen h-[450px] flex items-center justify-center"
+                    className="flex-shrink-0 w-screen h-[550px] flex items-center justify-center"
                 >
-                    <div className="w-full max-w-xl mx-5">
+                    <div className="w-[50%] max-w-xl mx-5">
                         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-lg m-5">
                             <div className="bg-gradient-to-br from-emerald-50 to-white border border-emerald-200 rounded-2xl p-6 shadow-md overflow-hidden">
                                 <h3 className="text-xl font-bold text-emerald-600 mb-4 text-center">
@@ -200,9 +216,9 @@ export default function Carousel() {
                 {/* Turtle Index Chart */}
                 <div
                     ref={el => chartsRef.current[2] = el}
-                    className="flex-shrink-0 w-screen h-[450px] flex items-center justify-center"
+                    className="flex-shrink-0 w-screen h-[550px] flex items-center justify-center"
                 >
-                    <div className="w-full max-w-xl mx-5">
+                    <div className="w-[50%] max-w-xl mx-5">
                         <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-lg m-5">
                             <div className="bg-gradient-to-br from-purple-50 to-white border border-purple-200 rounded-2xl p-6 shadow-md overflow-hidden">
                                 <h3 className="text-xl font-bold text-purple-600 mb-4 text-center">

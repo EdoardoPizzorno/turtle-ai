@@ -5,6 +5,7 @@ import Hero from "./components/Hero.jsx"
 import Navbar from "./components/Navbar.jsx"
 import Loader from './components/Loader.jsx';
 import Carousel from './components/Carousel.jsx';
+import Footer from './components/Footer.jsx';
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
       <Carousel/>
       {/* <Loader /> */}
       {/* <TurtleAnimation /> */}
+      <Footer/>
       </>
   );
 }
