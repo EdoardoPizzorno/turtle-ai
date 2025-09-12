@@ -1,7 +1,4 @@
 import './App.css';
-import './styles/Navbar.css';
-import './styles/Loader.css';
-import './styles/Hero.css';
 
 import TurtleAnimation from "./components/TurtleAnimation.jsx"
 import Hero from "./components/Hero.jsx"
