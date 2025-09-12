@@ -1,0 +1,212 @@
+.loader {
+    display: grid;
+    place-items: center;
+    gap: 14px;
+    padding: 24px;
+}
+
+.loader-fullscreen {
+    position: fixed;
+    inset: 0;
+    background: radial-gradient(1000px 400px at 10% -10%, rgba(16, 185, 129, 0.08), transparent),
+        linear-gradient(180deg, rgba(7, 10, 14, 0.9), rgba(5, 8, 12, 0.9));
+    z-index: 100;
+}
+
+.loader-label {
+    color: #bfeedd;
+    font-size: 14px;
+    letter-spacing: 0.3px;
+}
+
+.turtle-css {
+    position: relative;
+    width: 180px;
+    height: 120px;
+    animation: turtle-bob 1.4s ease-in-out infinite;
+}
+
+.shell {
+    position: absolute;
+    width: 130px;
+    height: 90px;
+    left: 25px;
+    top: 18px;
+    background: radial-gradient(120px 80px at 60% 40%, #2f855a, #14532d);
+    border-radius: 60% 60% 50% 50% / 70% 70% 50% 50%;
+    box-shadow: inset 0 0 0 6px rgba(22, 163, 74, 0.7), 0 12px 24px rgba(0, 0, 0, 0.35);
+}
+
+.shell .scutes {
+    position: absolute;
+    inset: 12px;
+    background:
+        radial-gradient(closest-side, rgba(0, 0, 0, 0.15), transparent) 25% 35%/34% 34% no-repeat,
+        radial-gradient(closest-side, rgba(0, 0, 0, 0.15), transparent) 75% 35%/34% 34% no-repeat,
+        radial-gradient(closest-side, rgba(0, 0, 0, 0.18), transparent) 50% 55%/36% 36% no-repeat,
+        radial-gradient(closest-side, rgba(255, 255, 255, 0.12), transparent) 50% 35%/22% 22% no-repeat;
+    border-radius: inherit;
+}
+
+.head {
+    position: absolute;
+    width: 46px;
+    height: 38px;
+    left: 132px;
+    top: 30px;
+    background: radial-gradient(40px 34px at 40% 40%, #86efac, #22c55e);
+    border-radius: 50% 60% 50% 50% / 60% 70% 40% 40%;
+    transform-origin: 5% 50%;
+    animation: head-peek 1.4s ease-in-out infinite;
+}
+
+.eye {
+    position: absolute;
+    right: 10px;
+    top: 12px;
+    width: 12px;
+    height: 12px;
+    background: #f8fafc;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+}
+
+.pupil {
+    width: 5px;
+    height: 5px;
+    background: #0f172a;
+    border-radius: 50%;
+}
+
+.tail {
+    position: absolute;
+    width: 0;
+    height: 0;
+    left: 12px;
+    top: 64px;
+    border-left: 12px solid transparent;
+    border-right: 0 solid transparent;
+    border-top: 12px solid #14532d;
+    transform-origin: 100% 0%;
+    animation: tail-wag 1.4s ease-in-out infinite;
+}
+
+.leg {
+    position: absolute;
+    width: 34px;
+    height: 22px;
+    background: linear-gradient(180deg, #16a34a, #065f46);
+    border-radius: 50% 50% 40% 40% / 60% 60% 40% 40%;
+    top: 88px;
+}
+
+.leg-front-left {
+    left: 42px;
+    transform-origin: 10% 10%;
+    animation: leg-front 0.7s ease-in-out infinite;
+}
+
+.leg-back-left {
+    left: 18px;
+    transform-origin: 10% 10%;
+    animation: leg-back 0.7s ease-in-out infinite;
+}
+
+.leg-front-right {
+    left: 108px;
+    transform-origin: 90% 10%;
+    animation: leg-back 0.7s ease-in-out infinite;
+}
+
+.leg-back-right {
+    left: 134px;
+    transform-origin: 90% 10%;
+    animation: leg-front 0.7s ease-in-out infinite;
+}
+
+.ground {
+    width: 220px;
+    height: 2px;
+    background: linear-gradient(90deg, rgba(170, 240, 207, 0.35) 0, rgba(170, 240, 207, 0.05) 50%, rgba(170, 240, 207, 0.35) 100%);
+    overflow: hidden;
+    position: relative;
+}
+
+.ground::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(90deg, rgba(170, 240, 207, 0.5) 0 12px, rgba(170, 240, 207, 0.1) 12px 24px);
+    animation: ground-move 1.2s linear infinite;
+}
+
+@keyframes turtle-bob {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-2px);
+    }
+}
+
+@keyframes head-peek {
+
+    0%,
+    100% {
+        transform: translateX(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateX(2px) rotate(-5deg);
+    }
+}
+
+@keyframes tail-wag {
+
+    0%,
+    100% {
+        transform: rotate(8deg);
+    }
+
+    50% {
+        transform: rotate(-6deg);
+    }
+}
+
+@keyframes leg-front {
+
+    0%,
+    100% {
+        transform: rotate(14deg);
+    }
+
+    50% {
+        transform: rotate(-10deg);
+    }
+}
+
+@keyframes leg-back {
+
+    0%,
+    100% {
+        transform: rotate(-10deg);
+    }
+
+    50% {
+        transform: rotate(14deg);
+    }
+}
+
+@keyframes ground-move {
+    from {
+        transform: translateX(0);
+    }
+
+    to {
+        transform: translateX(-24px);
+    }
+}

@@ -2,7 +2,7 @@ import React from "react";
 
 export default function Navbar() {
   return (
-    <header className="navbar">
+    <nav className="navbar">
       <div className="nav-inner">
         <div className="brand">TurtleAI</div>
         <nav className="nav-links">
@@ -13,7 +13,7 @@ export default function Navbar() {
         </nav>
         <a href="#app" className="cta">Launch App</a>
       </div>
-    </header>
+    </nav>
   );
 }
 
