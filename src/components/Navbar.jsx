@@ -1,49 +1,41 @@
-import React, { useEffect, useRef } from "react";
-import gsap from "gsap";
+import { Search, Bell, User, Sun } from "lucide-react";
+import DecryptedText from "./elements/DecryptedText";
 
 export default function Navbar() {
-  const navbarRef = useRef(null);
-
-  useEffect(() => {
-    if (!navbarRef.current) return;
-
-    gsap.set(navbarRef.current, {
-      y: -120,
-      opacity: 0,
-      visibility: "hidden",
-    });
-
-    gsap.to(navbarRef.current, {
-      y: 0,
-      opacity: 1,
-      visibility: "visible",
-      duration: 1.2,
-      ease: "power3.out",
-      delay: 1,
-    });
-  }, []);
-
   return (
-    <nav
-      ref={navbarRef}
-      className="fixed top-0 left-0 w-full z-50 backdrop-blur-lg bg-gradient-to-b from-white/90 to-white/70 border-b border-emerald-400/30"
-    >
-      <div className="max-w-6xl mx-auto flex items-center justify-between px-5 py-3.5">
-        <div className="font-extrabold tracking-wide text-emerald-600 text-xl">
-          TurtleAI
+    <nav className="w-full bg-black text-gray-200 flex items-center px-6 h-14 shadow-md">
+      <div className="flex items-center space-x-2">
+        <div className="flex items-center justify-center">
+          <img
+            src="../public/tartaruga/LOGO.png"
+            alt="Logo"
+            className="h-8 object-contain"
+          />
         </div>
-        <nav className="hidden md:flex items-center gap-4.5">
-          <a href="#markets" className="text-slate-700 text-sm hover:text-emerald-600 transition-all">Markets</a>
-          <a href="#analytics" className="text-slate-700 text-sm hover:text-emerald-600 transition-all">Analytics</a>
-          <a href="#pricing" className="text-slate-700 text-sm hover:text-emerald-600 transition-all">Pricing</a>
-          <a href="#docs" className="text-slate-700 text-sm hover:text-emerald-600 transition-all">Docs</a>
-        </nav>
-        <a
-          href="#app"
-          className="px-3.5 py-2 rounded-lg bg-gradient-to-br from-emerald-400 to-emerald-500 text-white font-bold border border-emerald-500/30 shadow-md shadow-emerald-400/25 hover:brightness-110 transition-all"
-        >
-          Launch App
-        </a>
+        <DecryptedText
+            text="TurtleAI"
+            animateOn="both"
+            revealDirection="center"
+            className="text-lg font-semibold text-white"
+          />
+      </div>
+
+      <ul className="flex items-center space-x-6 mx-auto text-sm font-medium">
+        <li className="hover:text-white cursor-pointer transition-colors border-b-2 border-transparent hover:border-white">
+            Dashboard
+        </li>
+        <li className="hover:text-white cursor-pointer transition-colors border-b-2 border-transparent hover:border-white">
+          Charts
+        </li>
+      </ul>
+
+      <div className="flex items-center space-x-4">
+        <Search className="w-5 h-5 cursor-pointer hover:text-white" />
+        <Sun className="w-5 h-5 cursor-pointer hover:text-white" />
+        <Bell className="w-5 h-5 cursor-pointer hover:text-white" />
+        <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center cursor-pointer">
+          <User className="w-5 h-5" />
+        </div>
       </div>
     </nav>
   );

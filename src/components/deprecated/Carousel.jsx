@@ -4,8 +4,8 @@ import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { Chart as ChartJS, CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Legend, BarElement } from 'chart.js';
 import { Line, Bar } from 'react-chartjs-2';
 import { SplitText } from "gsap/all";
-import DecryptedText from './elements/DecryptedText.jsx';
-import ShinyText from './elements/ShinyText.jsx';
+import DecryptedText from '../elements/DecryptedText.jsx';
+import ShinyText from '../elements/ShinyText.jsx';
 
 ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, BarElement, Title, Tooltip, Legend);
 

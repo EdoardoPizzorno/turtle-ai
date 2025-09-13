@@ -1,4 +1,4 @@
-import KpiCard from "./elements/KpiCard";
+import KpiCard from "../elements/deprecated/KpiCard";
 
 export default function ScrollingTrack({ elements = [], className = "", speed = 20, direction = "left" }) {
   // Duplicate array per effetto loop infinito
