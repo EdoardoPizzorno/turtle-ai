@@ -4,15 +4,61 @@ import { macroData } from "../static_data/macroData";
 import { marketCapData } from "../static_data/markerCapData";
 import { dominanceData } from "../static_data/dominanceData";
 import { volumeData } from "../static_data/volumeData";
+import { domandeTana } from "../static_data/domandeTana";
+import { btcusd } from "../static_data/btcusd";
 
 export default function Dashboard() {
+    // Trasforma il dizionario BTC in array
+    const btcArray = Object.entries(btcusd["Time Series (Digital Currency Weekly)"]).map(
+        ([date, values]) => ({
+            date,
+            close: parseFloat(values["4. close"])
+        })
+    );
+
+    // Ordina per data crescente
+    const btcSortedByDate = btcArray.sort((a, b) => a.date.localeCompare(b.date));
+
+    // Ordina anche domandeTana
+    const domandeSortedByDate = [...domandeTana].sort((a, b) =>
+        a.data.localeCompare(b.data)
+    );
+
+    let btcPointer = 0;
+    let lastKnownBtcClose = null;
+    const mergedBtcDomande = [];
+
+    for (const domanda of domandeSortedByDate) {
+        const domandaDate = domanda.data;
+
+        // Avanza finché la data BTC è <= alla data domanda
+        while (
+            btcPointer < btcSortedByDate.length &&
+            btcSortedByDate[btcPointer].date <= domandaDate
+        ) {
+            lastKnownBtcClose = btcSortedByDate[btcPointer].close;
+            btcPointer += 1;
+        }
+
+        if (lastKnownBtcClose != null) {
+            mergedBtcDomande.push({
+                date: domandaDate,
+                btc: lastKnownBtcClose,
+                domande: domanda.numero_domande
+            });
+        }
+    }
+
+    console.log(mergedBtcDomande);
+
     return (
         <div className="flex h-screen w-full bg-gray-900 text-white p-4 gap-4 overflow-hidden">
             {/* Colonna principale */}
             <div className="flex-1 flex flex-col gap-4">
                 {/* Riga 1 */}
                 <div className="flex gap-4">
-                    <div className="flex-1">
+                    {/* Vecchi grafici */}
+                    {/* <div className="flex-1">
                         <Chart
                             type="area"
                             title="Crypto Risk Indicators"
@@ -31,12 +77,37 @@ export default function Dashboard() {
                             colors={["#00ff00", "#ffcc00", "#ff4444"]}
                             className="h-64"
                         />
+                    </div> */}
+
+                    {/* Nuovi grafici */}
+                    <div className="flex-1">
+                        <Chart
+                            type="line"
+                            title="BTC vs Domande Tana"
+                            data={mergedBtcDomande}
+                            dataKeys={["btc", "domande"]}
+                            colors={["#00ff00", "#ff0000"]}
+                            rightAxisKeys={["domande"]}
+                            height={256}
+                        />
+                    </div>
+                    <div className="flex-1">
+                        <Chart
+                            type="line"
+                            title="BTC vs Domande Tana"
+                            data={mergedBtcDomande}
+                            dataKeys={["btc", "domande"]}
+                            colors={["#00ff00", "#ff0000"]}
+                            rightAxisKeys={["domande"]}
+                            height={256}
+                        />
                     </div>
                 </div>
 
                 {/* Riga 2 */}
                 <div className="flex gap-4">
-                    <div className="flex-1">
+                    {/* Vecchi grafici */}
+                    {/* <div className="flex-1">
                         <Chart
                             type="line"
                             title="Total Market Cap"
@@ -55,7 +126,9 @@ export default function Dashboard() {
                             colors={["#ff9900", "#627eea"]}
                             className="h-64"
                         />
-                    </div>
+                    </div> */}
+
+                    {/* Nuovi grafici */}
                 </div>
             </div>
 
