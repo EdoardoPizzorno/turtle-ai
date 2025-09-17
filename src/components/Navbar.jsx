@@ -7,7 +7,7 @@ export default function Navbar() {
       <div className="flex items-center space-x-2">
         <div className="flex items-center justify-center">
           <img
-            src="../public/tartaruga/LOGO.png"
+            src="/tartaruga/LOGO.png"
             alt="Logo"
             className="h-8 object-contain"
           />
@@ -21,10 +21,16 @@ export default function Navbar() {
       </div>
 
       <ul className="flex items-center space-x-6 mx-auto text-sm font-medium">
-        <li className="hover:text-white cursor-pointer transition-colors border-b-2 border-transparent hover:border-white">
-            Dashboard
+        <li
+          className="hover:text-white cursor-pointer transition-colors border-b-2 border-transparent hover:border-white"
+          onClick={() => { window.history.pushState(null, '', '/dashboard'); window.dispatchEvent(new PopStateEvent('popstate')); }}
+        >
+          Dashboard
         </li>
-        <li className="hover:text-white cursor-pointer transition-colors border-b-2 border-transparent hover:border-white">
+        <li
+          className="hover:text-white cursor-pointer transition-colors border-b-2 border-transparent hover:border-white"
+          onClick={() => { window.history.pushState(null, '', '/charts'); window.dispatchEvent(new PopStateEvent('popstate')); }}
+        >
           Charts
         </li>
       </ul>
@@ -33,7 +39,10 @@ export default function Navbar() {
         <Search className="w-5 h-5 cursor-pointer hover:text-white" />
         <Sun className="w-5 h-5 cursor-pointer hover:text-white" />
         <Bell className="w-5 h-5 cursor-pointer hover:text-white" />
-        <div className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center cursor-pointer">
+        <div
+          className="w-8 h-8 rounded-full bg-gray-700 flex items-center justify-center cursor-pointer"
+          onClick={() => { window.history.pushState(null, '', '/login'); window.dispatchEvent(new PopStateEvent('popstate')); }}
+        >
           <User className="w-5 h-5" />
         </div>
       </div>

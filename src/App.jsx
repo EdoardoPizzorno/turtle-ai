@@ -1,23 +1,37 @@
 import './App.css';
+import { useEffect, useState } from 'react';
 
-import TurtleAnimation from "./components/deprecated//TurtleAnimation.jsx"
-import Hero from "./components/deprecated//Hero.jsx"
 import Navbar from "./components/Navbar.jsx"
-import Loader from './components/deprecated//Loader.jsx';
-import Carousel from './components/deprecated//Carousel.jsx';
-import Footer from './components/deprecated//Footer.jsx';
+import Footer from './components/Footer.jsx';
 import Dashboard from './components/Dashboard.jsx';
+import Login from './components/Login.jsx';
+import Charts from './components/Charts.jsx';
 
 export default function App() {
+  const [path, setPath] = useState(window.location.pathname || '/dashboard');
+
+  useEffect(() => {
+    const handlePop = () => {
+      setPath(window.location.pathname || '/dashboard');
+    };
+    window.addEventListener('popstate', handlePop);
+    if (window.location.pathname === '/') {
+      window.history.replaceState(null, '', '/dashboard');
+      setPath('/dashboard');
+    }
+    return () => window.removeEventListener('popstate', handlePop);
+  }, []);
+
+  let content = null;
+  if (path === '/dashboard') content = <Dashboard />;
+  else if (path === '/charts') content = <Charts />;
+  else if (path === '/login') content = <Login />;
+  else content = <Dashboard />;
+
   return (
     <>
       <Navbar />
-      <Dashboard />
-
-      {/* <Hero /> */}
-      {/* <Carousel />*/}
-      {/* <Loader /> */}
-      {/* <TurtleAnimation /> */}
+      {content}
       <Footer />
     </>
   );

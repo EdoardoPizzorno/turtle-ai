@@ -40,7 +40,7 @@ export default function Dashboard() {
             {/* Colonna destra */}
             <div className="w-80 flex flex-col gap-4">
                 <VideoCard
-                    title="Latest Premium Video"
+                    title="Guarda il mio ultimo video"
                     videoUrl="https://www.youtube.com/embed/isn9zalGFjs?si=zI18v5tIblPxe7R2"
                 />
 
