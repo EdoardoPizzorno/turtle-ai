@@ -1,0 +1,20 @@
+[
+  { "symbol": "BTC", "name": "Bitcoin", "price": 50283.00, "change": -17.45, "risk": 0.55 },
+  { "symbol": "ETH", "name": "Ethereum", "price": 3664.00, "change": -1.20, "risk": 0.48 },
+  { "symbol": "BNB", "name": "BNB", "price": 592.10, "change": 0.80, "risk": 0.27 },
+  { "symbol": "SOL", "name": "Solana", "price": 142.34, "change": 2.30, "risk": 0.41 },
+  { "symbol": "XRP", "name": "XRP", "price": 0.58, "change": -0.50, "risk": 0.39 },
+  { "symbol": "ADA", "name": "Cardano", "price": 0.93, "change": 0.00, "risk": 0.58 },
+  { "symbol": "DOGE", "name": "Dogecoin", "price": 0.17, "change": 1.50, "risk": 0.62 },
+  { "symbol": "DOT", "name": "Polkadot", "price": 4.51, "change": 0.80, "risk": 0.27 },
+  { "symbol": "MATIC", "name": "Polygon", "price": 0.71, "change": -0.80, "risk": 0.33 },
+  { "symbol": "AVAX", "name": "Avalanche", "price": 28.44, "change": 3.20, "risk": 0.45 },
+  { "symbol": "ATOM", "name": "Cosmos", "price": 9.11, "change": -2.10, "risk": 0.36 },
+  { "symbol": "LINK", "name": "Chainlink", "price": 15.22, "change": 0.90, "risk": 0.31 },
+  { "symbol": "UNI", "name": "Uniswap", "price": 7.34, "change": 1.10, "risk": 0.42 },
+  { "symbol": "LTC", "name": "Litecoin", "price": 84.70, "change": -0.60, "risk": 0.37 },
+  { "symbol": "TRX", "name": "TRON", "price": 0.13, "change": 0.40, "risk": 0.29 },
+  { "symbol": "NEAR", "name": "NEAR Protocol", "price": 5.83, "change": 2.80, "risk": 0.46 }
+]
+
+

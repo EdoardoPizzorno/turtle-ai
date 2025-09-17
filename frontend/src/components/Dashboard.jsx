@@ -44,14 +44,7 @@ export default function Dashboard() {
                     videoUrl="https://www.youtube.com/embed/isn9zalGFjs?si=zI18v5tIblPxe7R2"
                 />
 
-                <Screener
-                    assets={[
-                        { symbol: "BTC", icon: "₿", price: "$115,997 ↑2.3%", change: 2.3, risk: 0.55 },
-                        { symbol: "ETH", icon: "Ξ", price: "$4,664 ↓1.2%", change: -1.2, risk: 0.71 },
-                        { symbol: "ADA", icon: "₳", price: "$0.93 →0.0%", change: 0.0, risk: 0.58 },
-                        { symbol: "DOT", icon: "◎", price: "$4.51 ↑0.8%", change: 0.8, risk: 0.27 },
-                    ]}
-                />
+                <Screener limit={8} />
             </div>
         </div>
     );
