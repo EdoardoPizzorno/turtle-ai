@@ -1,11 +1,64 @@
 @import "tailwindcss";
 
 body {
-  font-family: monospace;
+  font-family: "Inter";
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: black;
+  background-color: var(--bg);
+  color: var(--text);
+  overflow-x: hidden;
 }
+
+/* Themes */
+:root {
+  --bg: #000;
+  --text: #e5e7eb;
+}
+
+.theme-dark {
+  --bg: #000;
+  --text: #e5e7eb;
+}
+
+.theme-light {
+  --bg: #ffffff;
+  --text: #111827;
+}
+
+/* Light theme overrides for common Tailwind classes used in app */
+.theme-light .bg-black { background-color: #ffffff !important; }
+.theme-light .text-white { color: #111827 !important; }
+.theme-light .border-gray-800, .theme-light .border-gray-700 { border-color: #e5e7eb !important; }
+.theme-light .bg-gray-900 { background-color: #f9fafb !important; }
+.theme-light .bg-gray-800 { background-color: #f3f4f6 !important; }
+.theme-light .text-gray-200 { color: #1f2937 !important; }
+.theme-light .text-gray-100 { color: #111827 !important; }
+.theme-light .text-gray-300 { color: #374151 !important; }
+.theme-light .text-gray-400 { color: #6b7280 !important; }
+.theme-light .text-gray-500 { color: #9ca3af !important; }
+.theme-light .hover\:bg-gray-900:hover { background-color: #f3f4f6 !important; }
+.theme-light .hover\:bg-gray-900\/40:hover { background-color: #f3f4f6 !important; }
+.theme-light .hover\:text-white:hover { color: #111827 !important; }
+.theme-light .bg-black\/60 { background-color: rgba(255,255,255,0.6) !important; }
+
+/* Diagonal color wipe on theme change */
+.theme-transition::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(135deg, rgba(255,255,255,0.0), rgba(255,255,255,0.8));
+  transform: translateX(-100%) translateY(100%);
+  animation: diagonalWipe 380ms ease forwards;
+  z-index: 9999;
+}
+
+@keyframes diagonalWipe {
+  0% { transform: translateX(-100%) translateY(100%); opacity: 0.6; }
+  100% { transform: translateX(0%) translateY(0%); opacity: 0; }
+}
+
+.theme-light .invert-on-light { filter: invert(1) hue-rotate(180deg) saturate(0.8); }
 
 @keyframes marquee {
   0% {

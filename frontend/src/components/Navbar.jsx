@@ -1,4 +1,4 @@
-import { Search, Bell, User, Sun, LogOut, Settings, UserCircle } from "lucide-react";
+import { Search, Bell, User, Sun, Moon, LogOut, Settings, UserCircle } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import DecryptedText from "./elements/DecryptedText";
 import { getMe, logout, navigate } from "../services/auth";
@@ -8,6 +8,21 @@ export default function Navbar() {
   const [showNoti, setShowNoti] = useState(false);
   const [showProfile, setShowProfile] = useState(false);
   const [me, setMe] = useState(null);
+  const path = typeof window !== 'undefined' ? window.location.pathname : '/dashboard';
+  const [theme, setTheme] = useState(() => {
+    try {
+      const match = document.cookie.split('; ').find(r => r.startsWith('turtleai_theme='));
+      const saved = match ? decodeURIComponent(match.split('=')[1]) : '';
+      const valid = saved === 'light' || saved === 'dark' ? saved : null;
+      const root = document.documentElement;
+      if (valid) {
+        root.classList.remove('theme-dark','theme-light');
+        root.classList.add(valid === 'dark' ? 'theme-dark' : 'theme-light');
+        return valid;
+      }
+    } catch {}
+    return (typeof document !== 'undefined' && document.documentElement.classList.contains('theme-light')) ? 'light' : 'dark';
+  });
   const searchRef = useRef(null);
   const notiRef = useRef(null);
   const profileRef = useRef(null);
@@ -47,14 +62,17 @@ export default function Navbar() {
             <img
               src="/tartaruga/LOGO.png"
               alt="Logo"
-              className="h-8 object-contain"
+              className="h-8 object-contain invert-on-light"
             />
           </div>
           <DecryptedText
               text="TurtleAI"
-              animateOn="both"
+              animateOn="view"
               revealDirection="center"
-              className="text-lg font-semibold text-white"
+              className="text-white"
+              parentClassName="text-lg font-semibold tracking-normal leading-none"
+              fixedWidth={false}
+              lockWidth
             />
         </div>
       )}
@@ -64,9 +82,10 @@ export default function Navbar() {
           <img src="/tartaruga/LOGO.png" alt="Logo" className="h-8 object-contain" />
           <DecryptedText
             text="TurtleAI"
-            animateOn="both"
+            animateOn="view"
             revealDirection="center"
             className="text-lg font-semibold text-white"
+            lockWidth
           />
         </div>
       )}
@@ -74,16 +93,16 @@ export default function Navbar() {
       {!isLogin && (
         <ul className="flex items-center space-x-6 mx-auto text-sm font-medium">
           <li
-            className="hover:text-white cursor-pointer transition-colors border-b-2 border-transparent hover:border-white"
+            className={`cursor-pointer transition-colors border-b-2 px-1 pb-1 ${path.startsWith('/dashboard') ? 'text-white border-emerald-500' : 'text-gray-300 border-transparent hover:text-white hover:border-gray-500'}`}
             onClick={() => { window.history.pushState(null, '', '/dashboard'); window.dispatchEvent(new PopStateEvent('popstate')); }}
           >
             Dashboard
           </li>
           <li
-            className="hover:text-white cursor-pointer transition-colors border-b-2 border-transparent hover:border-white"
+            className={`cursor-pointer transition-colors border-b-2 px-1 pb-1 ${path === '/charts' || path.startsWith('/charts/') ? 'text-white border-emerald-500' : 'text-gray-300 border-transparent hover:text-white hover:border-gray-500'}`}
             onClick={() => { window.history.pushState(null, '', '/charts'); window.dispatchEvent(new PopStateEvent('popstate')); }}
           >
-            Charts
+            Grafici
           </li>
         </ul>
       )}
@@ -97,7 +116,7 @@ export default function Navbar() {
             onClick={(e) => { e.stopPropagation(); setShowSearch((v) => !v); setShowNoti(false); setShowProfile(false); }}
           />
           {showSearch && (
-            <div className="absolute right-0 top-8 w-72 bg-black border border-gray-700 rounded-lg shadow-lg overflow-hidden">
+            <div className="absolute right-0 top-8 z-100 w-72 bg-black border border-gray-700 rounded-lg shadow-lg overflow-hidden">
               <input
                 autoFocus
                 placeholder="Cerca..."
@@ -107,8 +126,32 @@ export default function Navbar() {
           )}
         </div>
 
-        {/* Theme placeholder */}
-        <Sun className="w-5 h-5 cursor-pointer hover:text-white" />
+        {/* Theme toggle */}
+        <button
+          className="w-8 h-8 rounded-md bg-gray-800 flex items-center justify-center hover:bg-gray-700 cursor-pointer"
+          onClick={() => {
+            const root = document.documentElement;
+            const next = theme === 'dark' ? 'light' : 'dark';
+            root.classList.remove('theme-dark', 'theme-light');
+            root.classList.add(next === 'dark' ? 'theme-dark' : 'theme-light');
+            setTheme(next);
+            try {
+              const expires = new Date(Date.now() + 365*24*60*60*1000).toUTCString();
+              document.cookie = `turtleai_theme=${encodeURIComponent(next)}; expires=${expires}; path=/; SameSite=Lax`;
+            } catch {}
+            // diagonal wipe overlay
+            const appRoot = document.getElementById('root');
+            if (appRoot) {
+              appRoot.classList.add('theme-transition');
+              setTimeout(() => appRoot.classList.remove('theme-transition'), 420);
+            }
+            // broadcast theme change event for charts
+            window.dispatchEvent(new Event('themechange'));
+          }}
+          title="Toggle theme"
+        >
+          {theme === 'dark' ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+        </button>
 
         {/* Notifications */}
         <div className="relative" ref={notiRef}>
@@ -117,7 +160,7 @@ export default function Navbar() {
             onClick={(e) => { e.stopPropagation(); setShowNoti((v) => !v); setShowSearch(false); setShowProfile(false); }}
           />
           {showNoti && (
-            <div className="absolute right-0 top-8 w-72 bg-black border border-gray-700 rounded-lg shadow-lg p-3">
+            <div className="absolute right-0 z-100 top-8 w-72 bg-black border border-gray-700 rounded-lg shadow-lg p-3">
               <p className="text-sm text-gray-400">Nessuna notifica</p>
             </div>
           )}

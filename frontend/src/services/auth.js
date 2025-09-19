@@ -1,4 +1,5 @@
 import { API_BASE_URL, api } from './api';
+import { setCookie, getCookie, deleteCookie } from './cookies';
 
 const GOOGLE_INIT_URL = import.meta.env.VITE_GOOGLE_INIT_URL || `${API_BASE_URL}/api/auth/google/init`;
 
@@ -9,42 +10,51 @@ export async function loginWithGoogle() {
   window.location.assign(url);
 }
 
-const ME_CACHE_KEY = 'turtleai_me_cache_v1';
+const ME_CACHE_KEY = 'turtleai_me';
 const ONE_DAY_MS = 24 * 60 * 60 * 1000;
 
 function readMeCache() {
-  try {
-    const raw = localStorage.getItem(ME_CACHE_KEY);
-    if (!raw) return null;
-    const parsed = JSON.parse(raw);
-    if (!parsed || typeof parsed !== 'object') return null;
-    return parsed;
-  } catch {
-    return null;
-  }
+  const parsed = getCookie(ME_CACHE_KEY);
+  if (!parsed || typeof parsed !== 'object') return null;
+  return parsed;
 }
 
-function writeMeCache(value) {
-  try {
-    const entry = { value, ts: Date.now() };
-    localStorage.setItem(ME_CACHE_KEY, JSON.stringify(entry));
-  } catch {}
+function writeMeCache(value) { setCookie(ME_CACHE_KEY, { value, ts: Date.now() }, 365); }
+
+function normalizeMeResponse(res) {
+  const src = (res && typeof res === 'object' && res.user) ? res.user : res || {};
+  const normalizedUser = {
+    name: src?.name ?? '',
+    email: src?.email ?? '',
+    createdAt: src?.createdAt ?? null,
+    subscription: {
+      plan: src?.subscription?.plan ?? 'free',
+      status: src?.subscription?.status ?? 'inactive',
+      renewalAt: src?.subscription?.renewalAt ?? null,
+      // spazio per metadata di livello, se esiste
+      level: src?.subscription?.level ?? (src?.subscription?.plan ?? 'free'),
+      meta: src?.subscription?.meta ?? null,
+    },
+  };
+  return { user: normalizedUser };
 }
 
 export async function getMe({ force = false } = {}) {
   if (!force) {
     const cached = readMeCache();
     if (cached && typeof cached.ts === 'number' && Date.now() - cached.ts < ONE_DAY_MS) {
-      return cached.value;
+      // garantisce che i campi attesi da Profile.jsx siano presenti
+      return normalizeMeResponse(cached.value);
     }
   }
   const res = await api.get('/api/auth/me');
-  writeMeCache(res);
-  return res;
+  const normalized = normalizeMeResponse(res);
+  writeMeCache(normalized);
+  return normalized;
 }
 
 export function logout() {
-  try { localStorage.removeItem(ME_CACHE_KEY); } catch {}
+  deleteCookie(ME_CACHE_KEY);
   return api.post('/api/auth/logout');
 }
 

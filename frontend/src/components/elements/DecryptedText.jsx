@@ -13,6 +13,8 @@ export default function DecryptedText({
   parentClassName = '',
   encryptedClassName = '',
   animateOn = 'hover',
+  fixedWidth = true,
+  lockWidth = true,
   ...props
 }) {
   const [displayText, setDisplayText] = useState(text);
@@ -21,6 +23,23 @@ export default function DecryptedText({
   const [revealedIndices, setRevealedIndices] = useState(new Set());
   const [hasAnimated, setHasAnimated] = useState(false);
   const containerRef = useRef(null);
+  const [lockWidthPx, setLockWidthPx] = useState(null);
+
+  useEffect(() => {
+    if (!lockWidth) { setLockWidthPx(null); return; }
+    try {
+      const el = document.createElement('span');
+      el.style.visibility = 'hidden';
+      el.style.position = 'absolute';
+      el.style.whiteSpace = 'pre';
+      el.className = `${parentClassName} ${className}`;
+      el.textContent = text;
+      document.body.appendChild(el);
+      const w = Math.ceil(el.getBoundingClientRect().width);
+      setLockWidthPx(w);
+      document.body.removeChild(el);
+    } catch {}
+  }, [text, className, parentClassName, lockWidth]);
 
   useEffect(() => {
     let interval;
@@ -182,6 +201,7 @@ export default function DecryptedText({
     <motion.span
       ref={containerRef}
       className={`inline-flex whitespace-pre-wrap ${parentClassName} font-bold text-lg tracking-wide`}
+      style={{ display: 'inline-block', width: lockWidth && lockWidthPx != null ? lockWidthPx : undefined }}
       {...hoverProps}
       {...props}
     >
@@ -199,7 +219,7 @@ export default function DecryptedText({
               className={isRevealedOrDone ? className : encryptedClassName}
               style={{
                 display: 'inline-block',
-                width: '1ch',
+                ...(fixedWidth ? { width: '1ch' } : {}),
                 textAlign: 'center',
               }}
             >

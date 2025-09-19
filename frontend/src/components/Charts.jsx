@@ -5,7 +5,7 @@ import { domandeTana } from "../static_data/domandeTana";
 import { btcusd } from "../static_data/btcusd";
 
 const CATEGORIES = [
-  { id: "favorites", label: "Favorites" },
+  { id: "favorites", label: "Preferiti" },
   { id: "tana-della-tartaruga", label: "Tana della Tartaruga" },
   { id: "risk", label: "Risk" },
   { id: "onchain", label: "On-chain" },
@@ -107,22 +107,20 @@ export default function Charts() {
   const [active, setActive] = useState("tana-della-tartaruga");
   const [favorites, setFavorites] = useState(() => {
     try {
-      const raw = JSON.parse(localStorage.getItem("turtleai_favCharts") || "[]");
+      const cookie = document.cookie.split('; ').find((r) => r.startsWith('turtleai_favCharts='));
+      const val = cookie ? decodeURIComponent(cookie.split('=')[1] || '[]') : '[]';
+      const raw = JSON.parse(val);
       const arr = Array.isArray(raw) ? raw : [];
       const normalized = arr
         .map((entry) => {
           if (typeof entry !== 'string') return null;
-          // If already a slug
           if (SLUG_TO_ID[entry]) return entry;
-          // If it's an ID, convert to slug
           if (CHART_META[entry]?.slug) return CHART_META[entry].slug;
           return null;
         })
         .filter(Boolean);
       return normalized;
-    } catch {
-      return [];
-    }
+    } catch { return []; }
   });
   const [favFilterId, setFavFilterId] = useState(null);
   const merged = useMergedSeries();
@@ -138,9 +136,24 @@ export default function Charts() {
         if (categoryIds.has(slug)) {
           setActive(slug);
           setDetailId(null);
+          // handle favorites slug
+          if (slug === 'favorites') {
+            setFavFilterId(null);
+          }
         } else {
           const id = SLUG_TO_ID[slug];
-          setDetailId(id || null);
+          if (id) {
+            setDetailId(id);
+          } else {
+            // If slug is a favorited chart, keep favorites view and optionally filter
+            if (favorites.includes(slug)) {
+              setActive('favorites');
+              setFavFilterId(SLUG_TO_ID[slug] || null);
+              setDetailId(null);
+            } else {
+              setDetailId(null);
+            }
+          }
         }
       } else {
         setDetailId(null);
@@ -157,7 +170,10 @@ export default function Charts() {
     if (!slug) return;
     setFavorites((prev) => {
       const next = prev.includes(slug) ? prev.filter((x) => x !== slug) : [...prev, slug];
-      localStorage.setItem("turtleai_favCharts", JSON.stringify(next));
+      try {
+        const expires = new Date(Date.now() + 365*24*60*60*1000).toUTCString();
+        document.cookie = `turtleai_favCharts=${encodeURIComponent(JSON.stringify(next))}; expires=${expires}; path=/; SameSite=Lax`;
+      } catch {}
       return next;
     });
   };
@@ -181,7 +197,7 @@ export default function Charts() {
         )}
         <button
           onClick={(e) => { e.stopPropagation(); toggleFav(id); }}
-          className={`pointer-events-auto ${detailId ? 'text-sm px-3 py-1.5' : 'text-xs px-2 py-1'} rounded ${favorites.includes(CHART_META[id]?.slug) ? 'bg-yellow-300 text-black' : 'bg-gray-800 text-gray-300'} hover:bg-yellow-600 hover:text-black hover:cursor-pointer`}
+          className={`pointer-events-auto ${detailId ? 'text-sm px-3 py-1.5' : 'text-xs px-2 py-1'} rounded ${favorites.includes(CHART_META[id]?.slug) ? 'bg-yellow-300 text-black' : 'bg-gray-800 text-gray-300'} hover:text-black hover:cursor-pointer`}
           title="Toggle favorite"
           aria-label="Toggle favorite"
         >
@@ -285,7 +301,7 @@ export default function Charts() {
       {/* Sidebar */}
       <aside className="w-64 pr-4 border-r border-gray-800">
         <div className="mb-6">
-          <h4 className="text-xs uppercase text-gray-400 mb-2">Categories</h4>
+          <h4 className="text-xs uppercase text-gray-400 mb-2">Categorie</h4>
           <ul className="space-y-1">
             {CATEGORIES.map((c) => (
               <li key={c.id}>
@@ -306,7 +322,7 @@ export default function Charts() {
         </div>
 
         <div>
-          <h4 className="text-xs uppercase text-gray-400 mb-2">Favorites</h4>
+          <h4 className="text-xs uppercase text-gray-400 mb-2">Preferiti</h4>
           {favorites.length === 0 ? (
             <p className="text-sm text-gray-500">Nessun preferito</p>
           ) : (
@@ -450,9 +466,16 @@ export default function Charts() {
         )}
         {!detailId && active === 'favorites' && (
           <Section title={favFilterId ? `Favorites: ${favFilterId}` : 'Favorites'}>
-            {(favFilterId ? [favFilterId] : favorites).map((id) => (
-              <div key={id}>{renderChartById(id)}</div>
-            ))}
+            {favorites.length === 0 ? (
+              <div className="rounded-2xl border border-gray-700 flex items-center justify-center h-[180px] text-gray-500 text-sm">
+                Nessun grafico nei preferiti
+              </div>
+            ) : (
+              (favFilterId ? [favFilterId] : favorites).map((slugOrId) => {
+                const id = SLUG_TO_ID[slugOrId] || slugOrId;
+                return <div key={slugOrId}>{renderChartById(id)}</div>;
+              })
+            )}
           </Section>
         )}
       </main>

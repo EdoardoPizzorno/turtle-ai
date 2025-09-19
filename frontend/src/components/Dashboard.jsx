@@ -7,7 +7,7 @@ export default function Dashboard() {
     const mergedBtcDomande = useMergedBtcDomande();
 
     return (
-        <div className="flex min-h-screen w-full bg-black text-white p-4 gap-4 overflow-y-auto">
+        <div className="flex min-h-screen w-full bg-black text-white p-4 gap-4 overflow-y-auto overflow-x-hidden">
             {/* Colonna principale */}
             <div className="flex-1 flex flex-col gap-4">
                 <div className="flex gap-4">
@@ -20,7 +20,7 @@ export default function Dashboard() {
                             dataKeys={["BTC", "Domande"]}
                             colors={["#00ff00", "#ff0000"]}
                             rightAxisKeys={["Domande"]}
-                            height={260}
+                            height={280}
                             isPreview
                             to="btc-vs-domande"
                         />
@@ -34,7 +34,7 @@ export default function Dashboard() {
                             dataKeys={["BTC", "Iscritti"]}
                             colors={["#00ff00", "#ff0000"]}
                             rightAxisKeys={["Iscritti"]}
-                            height={260}
+                            height={280}
                             isPreview
                             to="btc-vs-domande"
                         />
@@ -52,7 +52,7 @@ export default function Dashboard() {
                             dataKeys={["BTC", "Domande"]}
                             colors={["#00ff00", "#ff0000"]}
                             rightAxisKeys={["Domande"]}
-                            height={260}
+                            height={280}
                             isPreview
                             to="btc-vs-domande"
                         />
@@ -66,7 +66,7 @@ export default function Dashboard() {
                             dataKeys={["BTC", "Iscritti"]}
                             colors={["#00ff00", "#ff0000"]}
                             rightAxisKeys={["Iscritti"]}
-                            height={260}
+                            height={280}
                             isPreview
                             to="btc-line"
                         />

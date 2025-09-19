@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { Maximize2 } from "lucide-react";
 import ReactECharts from "echarts-for-react";
 
@@ -15,12 +15,21 @@ export default function Chart({
   to,
   openPath,
   onOpen,
-  fontFamily = "monospace, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif",
+  fontFamily = "Inter",
 }) {
+  const isLight = typeof document !== 'undefined' && document.documentElement.classList.contains('theme-light');
+  const [themeVersion, setThemeVersion] = useState(isLight ? 'light' : 'dark');
+
+  useEffect(() => {
+    const onTheme = () => setThemeVersion(document.documentElement.classList.contains('theme-light') ? 'light' : 'dark');
+    window.addEventListener('themechange', onTheme);
+    return () => window.removeEventListener('themechange', onTheme);
+  }, []);
+
   const greenColor = "#00ff41";
-  const xAxisColor = "#0b472d";
-  const labelColor = "#9ca3af";
-  const gridLineColor = "rgba(148,163,184,0.12)";
+  const xAxisColor = isLight ? "#d1d5db" : "#0b472d";
+  const labelColor = isLight ? "#374151" : "#9ca3af";
+  const gridLineColor = isLight ? "rgba(100,116,139,0.18)" : "rgba(148,163,184,0.12)";
 
   const numberFormatter = new Intl.NumberFormat("it-IT", { maximumFractionDigits: 2 });
 
@@ -28,12 +37,25 @@ export default function Chart({
   const availableValueKeys = Object.keys(firstDatum).filter((k) => k !== "date");
   const rightAxisSet = new Set((rightAxisKeys || []).map((k) => String(k).toLowerCase()));
 
+  const mapLightColor = (hex) => {
+    if (!hex) return hex;
+    const h = hex.toLowerCase();
+    if (h === '#00ff00') return '#16a34a'; // green → darker
+    if (h === '#ff0000') return '#dc2626'; // red → darker
+    if (h === '#00bcd4') return '#0891b2'; // cyan → darker
+    if (h === '#f59e0b') return '#b45309'; // amber → darker
+    if (h === '#00ff41') return '#10b981'; // matrix green → teal-ish
+    return hex;
+  };
+
+  const effectiveColors = (isLight ? colors.map(mapLightColor) : colors);
+
   const seriesConfigs = dataKeys.map((label, i) => {
     const lowerLabel = String(label).toLowerCase();
     const matchedKey =
       availableValueKeys.find((k) => k.toLowerCase() === lowerLabel) || String(label);
     const useRightAxis = rightAxisSet.has(lowerLabel) || rightAxisSet.has(matchedKey.toLowerCase());
-    return { label: String(label), key: matchedKey, color: colors[i], yAxisIndex: useRightAxis ? 1 : 0 };
+    return { label: String(label), key: matchedKey, color: effectiveColors[i], yAxisIndex: useRightAxis ? 1 : 0 };
   });
 
   const series = seriesConfigs.map((cfg) => {
@@ -60,10 +82,44 @@ export default function Chart({
   });
 
   const watermarkImagePath = "/tartaruga/LOGO.png";
+  const [watermarkImageNode, setWatermarkImageNode] = useState(null);
+
+  useEffect(() => {
+    if (!isLight) {
+      setWatermarkImageNode(null);
+      return;
+    }
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.src = watermarkImagePath;
+    img.onload = () => {
+      try {
+        const canvas = document.createElement('canvas');
+        const width = img.naturalWidth || img.width;
+        const height = img.naturalHeight || img.height;
+        canvas.width = width;
+        canvas.height = height;
+        const ctx = canvas.getContext('2d');
+        if (!ctx) return;
+        ctx.drawImage(img, 0, 0, width, height);
+        const imageData = ctx.getImageData(0, 0, width, height);
+        const data = imageData.data;
+        for (let i = 0; i < data.length; i += 4) {
+          data[i] = 255 - data[i];
+          data[i + 1] = 255 - data[i + 1];
+          data[i + 2] = 255 - data[i + 2];
+        }
+        ctx.putImageData(imageData, 0, 0);
+        setWatermarkImageNode(canvas);
+      } catch (e) {
+        setWatermarkImageNode(null);
+      }
+    };
+  }, [isLight]);
 
   const baseFontSize = isPreview ? 10 : 12;
   const option = {
-    backgroundColor: "#000",
+    backgroundColor: isLight ? "#fff" : "#000",
     textStyle: {
       fontFamily,
       color: labelColor,
@@ -74,7 +130,7 @@ export default function Chart({
           text: title,
           left: "center",
           top: "10px",
-          textStyle: { color: "#fff", fontSize: 16, fontWeight: "bold" },
+          textStyle: { color: (isLight ? "#111" : "#fff"), fontSize: 16, fontWeight: "bold" },
         }
       : undefined,
     tooltip: {
@@ -100,7 +156,7 @@ export default function Chart({
       labels.forEach((n, i) => nameToIndex.set(n, i));
       const rich = {};
       labels.forEach((_, i) => {
-        rich[`s${i}`] = { color: colors[i] || greenColor };
+        rich[`s${i}`] = { color: effectiveColors[i] || greenColor };
       });
       return {
         show: !isPreview && labels.length > 1,
@@ -135,8 +191,8 @@ export default function Chart({
         z: 0,
         silent: true,
         style: {
-          image: watermarkImagePath,
-          opacity: isPreview ? 0.06 : 0.05,
+          image: (isLight && watermarkImageNode) ? watermarkImageNode : watermarkImagePath,
+          opacity: isLight ? (isPreview ? 0.08 : 0.06) : (isPreview ? 0.06 : 0.05),
           width: isPreview ? 140 : 220,
           height: isPreview ? 140 : 220,
         },
@@ -283,7 +339,7 @@ export default function Chart({
             title="Apri in dettaglio"
             aria-label="Apri in dettaglio"
           >
-            <Maximize2 className="w-4 h-4" />
+            <Maximize2 className="w-4 h-4 hover:cursor-pointer" />
           </button>
         </div>
       )}
