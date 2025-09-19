@@ -42,7 +42,7 @@ export default function Navbar() {
   return (
     <nav className="w-full bg-black text-gray-200 flex items-center px-6 h-14 shadow-md relative">
       {!isLogin && (
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-2 hover:cursor-pointer" onClick={() => { window.history.pushState(null, '', '/dashboard'); window.dispatchEvent(new PopStateEvent('popstate')); }}>
           <div className="flex items-center justify-center">
             <img
               src="/tartaruga/LOGO.png"
@@ -133,19 +133,16 @@ export default function Navbar() {
           </div>
           {showProfile && (
             <div className="absolute right-0 top-10 w-56 bg-black border border-gray-700 rounded-lg shadow-lg py-2 z-100">
-              <div className="px-3 py-2 text-sm text-gray-300 flex items-center gap-2">
+              <button
+                className="w-full text-left px-3 py-2 text-sm text-gray-300 flex items-center gap-2 hover:bg-gray-900 hover:cursor-pointer"
+                onClick={() => { setShowProfile(false); navigate('/profile'); }}
+              >
                 <UserCircle className="w-4 h-4" />
                 {me ? me.name : 'Ospite'}
-              </div>
-              <button
-                className="w-full text-left px-3 py-2 text-sm hover:bg-gray-900 flex items-center gap-2"
-                onClick={() => navigate('/dashboard')}
-              >
-                <Settings className="w-4 h-4" /> Impostazioni
               </button>
               {me ? (
                 <button
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-900 flex items-center gap-2 text-red-400"
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-900 flex items-center gap-2 text-red-400 hover:cursor-pointer"
                   onClick={onLogout}
                 >
                   <LogOut className="w-4 h-4" /> Logout

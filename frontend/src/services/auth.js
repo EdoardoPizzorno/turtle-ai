@@ -9,11 +9,42 @@ export async function loginWithGoogle() {
   window.location.assign(url);
 }
 
-export function getMe() {
-  return api.get('/api/auth/me');
+const ME_CACHE_KEY = 'turtleai_me_cache_v1';
+const ONE_DAY_MS = 24 * 60 * 60 * 1000;
+
+function readMeCache() {
+  try {
+    const raw = localStorage.getItem(ME_CACHE_KEY);
+    if (!raw) return null;
+    const parsed = JSON.parse(raw);
+    if (!parsed || typeof parsed !== 'object') return null;
+    return parsed;
+  } catch {
+    return null;
+  }
+}
+
+function writeMeCache(value) {
+  try {
+    const entry = { value, ts: Date.now() };
+    localStorage.setItem(ME_CACHE_KEY, JSON.stringify(entry));
+  } catch {}
+}
+
+export async function getMe({ force = false } = {}) {
+  if (!force) {
+    const cached = readMeCache();
+    if (cached && typeof cached.ts === 'number' && Date.now() - cached.ts < ONE_DAY_MS) {
+      return cached.value;
+    }
+  }
+  const res = await api.get('/api/auth/me');
+  writeMeCache(res);
+  return res;
 }
 
 export function logout() {
+  try { localStorage.removeItem(ME_CACHE_KEY); } catch {}
   return api.post('/api/auth/logout');
 }
 

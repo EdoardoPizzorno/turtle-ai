@@ -7,6 +7,7 @@ import Dashboard from './components/Dashboard.jsx';
 import Login from './components/Login.jsx';
 import Charts from './components/Charts.jsx';
 import Screener from './components/Screener.jsx';
+import Profile from './components/Profile.jsx';
 
 export default function App() {
   const [path, setPath] = useState(window.location.pathname || '/dashboard');
@@ -28,6 +29,7 @@ export default function App() {
   else if (path === '/charts' || path.startsWith('/charts/')) content = <Charts />;
   else if (path === '/login') content = <Login />;
   else if (path === '/screener') content = <Screener />;
+  else if (path === '/profile') content = <Profile />;
   else content = <Dashboard />;
 
   return (

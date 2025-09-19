@@ -1,4 +1,5 @@
 import React from "react";
+import { Maximize2 } from "lucide-react";
 import ReactECharts from "echarts-for-react";
 
 export default function Chart({
@@ -9,10 +10,16 @@ export default function Chart({
   title,
   height = 250,
   rightAxisKeys = [],
+  isPreview = false,
+  detail = false,
+  to,
+  openPath,
+  onOpen,
+  fontFamily = "monospace, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif",
 }) {
   const greenColor = "#00ff41";
   const xAxisColor = "#0b472d";
-  const labelColor = "#e5e7eb";
+  const labelColor = "#9ca3af";
   const gridLineColor = "rgba(148,163,184,0.12)";
 
   const numberFormatter = new Intl.NumberFormat("it-IT", { maximumFractionDigits: 2 });
@@ -37,12 +44,12 @@ export default function Chart({
       data: data.map((d) => [d.date, d[cfg.key]]),
       smooth: true,
       symbol: "none",
-      lineStyle: { width: 2, color: cfg.color },
+      lineStyle: { width: 1, color: cfg.color },
       itemStyle: { color: cfg.color },
     };
 
     if (type === "area") {
-      return { ...base, areaStyle: { color: (cfg.color || "") + "33" } };
+      return { ...base, areaStyle: { color: (cfg.color || "") + "22" } };
     }
 
     if (type === "bar") {
@@ -52,12 +59,15 @@ export default function Chart({
     return base;
   });
 
+  const watermarkImagePath = "/tartaruga/LOGO.png";
+
+  const baseFontSize = isPreview ? 10 : 12;
   const option = {
     backgroundColor: "#000",
     textStyle: {
-      fontFamily:
-        "'Geist', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif",
+      fontFamily,
       color: labelColor,
+      fontSize: baseFontSize,
     },
     title: title
       ? {
@@ -72,7 +82,7 @@ export default function Chart({
       backgroundColor: "#000",
       borderColor: "#00ff88",
       textStyle: { color: "#d1ffe8" },
-      axisPointer: { type: "cross" },
+      axisPointer: { type: "line" },
       formatter: (params) => {
         if (!params || !params.length) return "";
         const date = params[0].axisValue;
@@ -93,22 +103,45 @@ export default function Chart({
         rich[`s${i}`] = { color: colors[i] || greenColor };
       });
       return {
+        show: !isPreview && labels.length > 1,
         data: labels.map((name) => ({ name, icon: "circle" })),
         formatter: (name) => {
           const idx = nameToIndex.get(name) ?? 0;
           return `{s${idx}|${name}}`;
         },
-        textStyle: { rich },
-        top: title ? "40px" : "10px",
+        textStyle: { rich, fontSize: baseFontSize + 2 },
+        bottom: 4,
         left: "center",
+        orient: "horizontal",
+        itemGap: 6,
+        itemWidth: 8,
+        itemHeight: 8,
+        padding: 0,
       };
     })(),
-    grid: { 
-      left: rightAxisKeys.length > 0 ? "12%" : "8%", 
-      right: rightAxisKeys.length > 0 ? "12%" : "8%", 
-      top: title ? "80px" : "60px", 
-      bottom: "20%" 
+    grid: {
+      left: isPreview ? 20 : 36,
+      right: isPreview ? 20 : 36,
+      top: title ? 44 : 12,
+      bottom: isPreview ? 28 : 36,
+      containLabel: true,
     },
+    graphic: [
+      {
+        type: "image",
+        id: "watermark",
+        left: "center",
+        top: "middle",
+        z: 0,
+        silent: true,
+        style: {
+          image: watermarkImagePath,
+          opacity: isPreview ? 0.06 : 0.05,
+          width: isPreview ? 140 : 220,
+          height: isPreview ? 140 : 220,
+        },
+      },
+    ],
     
     ...(() => {
       const dateStrings = data.map((d) => d.date);
@@ -169,39 +202,58 @@ export default function Chart({
         xAxis: {
           type: "category",
           data: dateStrings,
-          axisLine: { lineStyle: { color: xAxisColor } },
+          axisLine: { lineStyle: { color: xAxisColor, opacity: 0.4 } },
           axisLabel: {
             color: labelColor,
             rotate: 0,
-            fontSize: 10,
+            fontSize: baseFontSize - 1,
             interval: (index, value) => visibleLabelIndices.has(index),
-            formatter: (value, index) =>
-              visibleLabelIndices.has(index) ? formatMonthYear(value) : "",
+            formatter: (value, index) => (visibleLabelIndices.has(index) ? formatMonthYear(value) : ""),
+            margin: 6,
+            hideOverlap: true,
           },
+          axisTick: { show: false },
         },
       };
     })(),
     yAxis: [
       {
         type: "value",
-        axisLine: { lineStyle: { color: xAxisColor } },
+        axisLine: { lineStyle: { color: xAxisColor, opacity: 0.4 } },
         axisLabel: { 
           color: labelColor,
           formatter: (value) => numberFormatter.format(value),
+          show: !isPreview,
+          inside: false,
+          align: "right",
+          verticalAlign: "middle",
+          margin: 10,
+          padding: [0,0,0,0],
+          fontSize: baseFontSize,
+          hideOverlap: true,
         },
         splitLine: { lineStyle: { color: gridLineColor, type: "dashed" } },
+        axisTick: { show: false },
       },
       ...(rightAxisKeys.length > 0
         ? [
             {
               type: "value",
               position: "right",
-              axisLine: { lineStyle: { color: xAxisColor } },
+              axisLine: { lineStyle: { color: xAxisColor, opacity: 0.4 } },
               axisLabel: { 
                 color: labelColor,
                 formatter: (value) => numberFormatter.format(value),
+                show: !isPreview,
+                inside: false,
+                align: "left",
+                verticalAlign: "middle",
+                margin: 10,
+                fontSize: baseFontSize,
+                hideOverlap: true,
               },
               splitLine: { show: false },
+              axisTick: { show: false },
             },
           ]
         : []),
@@ -209,9 +261,36 @@ export default function Chart({
     series,
   };
 
+  const handleOpen = () => {
+    if (typeof onOpen === 'function') {
+      onOpen();
+      return;
+    }
+    const path = openPath || (to ? `/charts/${to}` : null);
+    if (path) {
+      window.history.pushState(null, '', path);
+      window.dispatchEvent(new PopStateEvent('popstate'));
+    }
+  };
+
   return (
-    <div className="bg-black rounded-2xl p-4 shadow-lg border border-gray-700">
-      <ReactECharts option={option} style={{ height, width: "100%" }} />
+    <div className="relative bg-black rounded-2xl pt-2 px-2 pb-2 shadow-lg border border-gray-700">
+      {!detail && (to || openPath || onOpen) && (
+        <div className="absolute top-2 right-2 z-30">
+          <button
+            onClick={handleOpen}
+            className="text-xs px-2 py-1 rounded bg-gray-800 text-gray-300 hover:bg-blue-500 hover:text-black"
+            title="Apri in dettaglio"
+            aria-label="Apri in dettaglio"
+          >
+            <Maximize2 className="w-4 h-4" />
+          </button>
+        </div>
+      )}
+      {(() => {
+        const effectiveHeight = detail ? Math.max(height, 560) : height;
+        return <ReactECharts option={option} style={{ height: effectiveHeight, width: "100%" }} />;
+      })()}
     </div>
   );
 }

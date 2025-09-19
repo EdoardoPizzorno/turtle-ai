@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from "react";
+import { Maximize2, Star } from "lucide-react";
 import Chart from "./elements/Chart";
 import { domandeTana } from "../static_data/domandeTana";
 import { btcusd } from "../static_data/btcusd";
 
 const CATEGORIES = [
   { id: "favorites", label: "Favorites" },
-  { id: "price", label: "Tana della Tartaruga" },
+  { id: "tana-della-tartaruga", label: "Tana della Tartaruga" },
   { id: "risk", label: "Risk" },
   { id: "onchain", label: "On-chain" },
   { id: "momentum", label: "Momentum" },
@@ -15,37 +16,37 @@ const CHART_META = {
   'BTC vs Domande': {
     slug: 'btc-vs-domande',
     title: 'BTC vs Domande Tana',
-    description: 'Confronto tra prezzo BTC e numero di domande Tana per capire le relazioni tra interesse e prezzo.',
+    description: 'Descrizione da aggiungere',
     youtube: 'https://www.youtube.com/watch?v=isn9zalGFjs',
   },
   'Domande Area': {
     slug: 'domande-area',
     title: 'Domande Tana (Area)',
-    description: 'Evoluzione delle domande nel tempo con rappresentazione ad area.',
+    description: 'Descrizione da aggiungere',
     youtube: 'https://www.youtube.com/watch?v=isn9zalGFjs',
   },
   'BTC Line': {
     slug: 'btc-line',
     title: 'BTC (line)',
-    description: 'Prezzo di chiusura settimanale BTC.',
+    description: 'Descrizione da aggiungere',
     youtube: 'https://www.youtube.com/watch?v=isn9zalGFjs',
   },
   'Domande Line': {
     slug: 'domande-line',
     title: 'Domande (line)',
-    description: 'Numero di domande Tana nel tempo, in linea.',
+    description: 'Descrizione da aggiungere',
     youtube: 'https://www.youtube.com/watch?v=isn9zalGFjs',
   },
   'Momentum 1': {
     slug: 'momentum-1',
     title: 'Momentum Example 1',
-    description: 'Esempio momentum su BTC.',
+    description: 'Descrizione da aggiungere',
     youtube: 'https://www.youtube.com/watch?v=isn9zalGFjs',
   },
   'Momentum 2': {
     slug: 'momentum-2',
     title: 'Momentum Example 2',
-    description: 'Esempio momentum su domande.',
+    description: 'Descrizione da aggiungere',
     youtube: 'https://www.youtube.com/watch?v=isn9zalGFjs',
   },
 };
@@ -85,17 +86,17 @@ function Section({ title, children }) {
   if (count === 1) {
     gridClass = "grid-cols-1";
   } else if (count === 2) {
-    gridClass = "grid-cols-2";
+    gridClass = "grid-cols-3";
   } else if (count === 3 || count === 4) {
-    gridClass = "grid-cols-2";
+    gridClass = "grid-cols-3";
   } else if (count > 4) {
     gridClass = "grid-cols-4";
   }
 
   return (
-    <div className="mb-8">
+    <div className="mb-6">
       <h3 className="text-lg font-semibold mb-3 text-gray-200">{title}</h3>
-      <div className={`grid ${gridClass} gap-4`}>
+      <div className={`grid ${gridClass} gap-3`}>
         {items}
       </div>
     </div>
@@ -103,9 +104,25 @@ function Section({ title, children }) {
 }
 
 export default function Charts() {
-  const [active, setActive] = useState("price");
+  const [active, setActive] = useState("tana-della-tartaruga");
   const [favorites, setFavorites] = useState(() => {
-    try { return JSON.parse(localStorage.getItem("favCharts") || "[]"); } catch { return []; }
+    try {
+      const raw = JSON.parse(localStorage.getItem("turtleai_favCharts") || "[]");
+      const arr = Array.isArray(raw) ? raw : [];
+      const normalized = arr
+        .map((entry) => {
+          if (typeof entry !== 'string') return null;
+          // If already a slug
+          if (SLUG_TO_ID[entry]) return entry;
+          // If it's an ID, convert to slug
+          if (CHART_META[entry]?.slug) return CHART_META[entry].slug;
+          return null;
+        })
+        .filter(Boolean);
+      return normalized;
+    } catch {
+      return [];
+    }
   });
   const [favFilterId, setFavFilterId] = useState(null);
   const merged = useMergedSeries();
@@ -117,8 +134,14 @@ export default function Charts() {
       const path = window.location.pathname;
       if (path.startsWith('/charts/')) {
         const slug = path.split('/')[2];
-        const id = SLUG_TO_ID[slug];
-        setDetailId(id || null);
+        const categoryIds = new Set(CATEGORIES.map((c) => c.id));
+        if (categoryIds.has(slug)) {
+          setActive(slug);
+          setDetailId(null);
+        } else {
+          const id = SLUG_TO_ID[slug];
+          setDetailId(id || null);
+        }
       } else {
         setDetailId(null);
       }
@@ -130,24 +153,42 @@ export default function Charts() {
   }, []);
 
   const toggleFav = (id) => {
+    const slug = CHART_META[id]?.slug;
+    if (!slug) return;
     setFavorites((prev) => {
-      const next = prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id];
-      localStorage.setItem("favCharts", JSON.stringify(next));
+      const next = prev.includes(slug) ? prev.filter((x) => x !== slug) : [...prev, slug];
+      localStorage.setItem("turtleai_favCharts", JSON.stringify(next));
       return next;
     });
   };
 
   const ChartCard = ({ id, ...props }) => (
-    <div className="relative group" onClick={() => {
-      const slug = CHART_META[id]?.slug;
-      if (slug) { window.history.pushState(null, '', `/charts/${slug}`); window.dispatchEvent(new PopStateEvent('popstate')); }
-    }}>
-      <button
-        onClick={(e) => { e.stopPropagation(); toggleFav(id); }}
-        className={`absolute z-10 right-3 top-3 text-xs px-2 py-1 rounded ${favorites.includes(id) ? 'bg-yellow-300 text-black' : 'bg-gray-800 text-gray-300'} hover:bg-yellow-600 hover:text-black hover:cursor-pointer`}
-        title="Toggle favorite"
-      >★</button>
-      <Chart {...props} />
+    <div className="relative group">
+      <div className="absolute inset-x-0 top-2 z-20 flex items-center justify-end gap-2 px-2 pointer-events-none">
+        {!detailId && (
+          <button
+            onClick={(e) => {
+              e.stopPropagation();
+              const slug = CHART_META[id]?.slug;
+              if (slug) { window.history.pushState(null, '', `/charts/${slug}`); window.dispatchEvent(new PopStateEvent('popstate')); }
+            }}
+            className={`pointer-events-auto ${detailId ? 'text-sm px-3 py-1.5' : 'text-xs px-2 py-1'} rounded bg-gray-800 text-gray-300 hover:bg-blue-500 hover:text-black hover:cursor-pointer`}
+            title="Apri a schermo intero"
+            aria-label="Apri a schermo intero"
+          >
+            <Maximize2 className={`${detailId ? 'w-5 h-5' : 'w-4 h-4'}`} />
+          </button>
+        )}
+        <button
+          onClick={(e) => { e.stopPropagation(); toggleFav(id); }}
+          className={`pointer-events-auto ${detailId ? 'text-sm px-3 py-1.5' : 'text-xs px-2 py-1'} rounded ${favorites.includes(CHART_META[id]?.slug) ? 'bg-yellow-300 text-black' : 'bg-gray-800 text-gray-300'} hover:bg-yellow-600 hover:text-black hover:cursor-pointer`}
+          title="Toggle favorite"
+          aria-label="Toggle favorite"
+        >
+          <Star className={`${detailId ? 'w-5 h-5' : 'w-4 h-4'}`} />
+        </button>
+      </div>
+      <Chart {...props} isPreview={!detailId} detail={!!detailId} fontFamily="'Space Grotesk', Inter, ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, Ubuntu, Cantarell, 'Noto Sans', 'Helvetica Neue', Arial, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', sans-serif" />
     </div>
   );
 
@@ -157,7 +198,7 @@ export default function Charts() {
       case 'BTC vs Domande':
         return (
           <ChartCard
-            id="BTC vs Domande Tana"
+            id="BTC vs Domande"
             type="line"
             title="BTC vs Domande Tana"
             data={merged}
@@ -186,7 +227,7 @@ export default function Charts() {
             id="BTC Line"
             type="line"
             title="BTC (line)"
-            data={merged.map(({date, btc}) => ({date, btc}))}
+            data={merged.map(({ date, btc }) => ({ date, btc }))}
             dataKeys={["BTC"]}
             colors={["#00ff00"]}
             rightAxisKeys={[]}
@@ -199,7 +240,7 @@ export default function Charts() {
             id="Domande Line"
             type="line"
             title="Domande (line)"
-            data={merged.map(({date, domande}) => ({date, domande}))}
+            data={merged.map(({ date, domande }) => ({ date, domande }))}
             dataKeys={["Domande"]}
             colors={["#ff0000"]}
             rightAxisKeys={[]}
@@ -249,8 +290,13 @@ export default function Charts() {
             {CATEGORIES.map((c) => (
               <li key={c.id}>
                 <button
-                  className={`w-full text-left px-3 py-2 rounded hover:bg-gray-900 ${active === c.id ? 'bg-gray-900 text-white' : 'text-gray-300'}`}
-                  onClick={() => setActive(c.id)}
+                  className={`w-full text-left px-3 py-2 rounded hover:bg-gray-900 hover:cursor-pointer ${active === c.id ? 'bg-gray-900 text-white' : 'text-gray-300'}`}
+                  onClick={() => {
+                    setActive(c.id);
+                    setDetailId(null);
+                    window.history.pushState(null, '', `/charts/${c.id}`);
+                    window.dispatchEvent(new PopStateEvent('popstate'));
+                  }}
                 >
                   {c.label}
                 </button>
@@ -265,20 +311,25 @@ export default function Charts() {
             <p className="text-sm text-gray-500">Nessun preferito</p>
           ) : (
             <ul className="text-sm text-gray-300 space-y-1">
-              {favorites.map((f) => (
-                <li key={f}>
+            {favorites.map((slug) => {
+              const id = SLUG_TO_ID[slug];
+              if (!id) return null;
+              const label = CHART_META[id]?.title || id;
+              return (
+                <li key={slug}>
                   <button
-                    className={`w-full text-left px-2 py-1 rounded ${favFilterId === f && active === 'favorites' ? 'bg-gray-800 text-white' : 'bg-gray-900 hover:bg-gray-800'}`}
-                    onClick={() => { setActive('favorites'); setFavFilterId(f); }}
-                  >{f}</button>
+                    className={`w-full text-left px-2 py-1 rounded hover:cursor-pointer ${favFilterId === id && active === 'favorites' ? 'bg-gray-800 text-white' : 'bg-gray-900 hover:bg-gray-800'}`}
+                    onClick={() => {
+                      setActive('favorites');
+                      setFavFilterId(id);
+                      setDetailId(null);
+                      window.history.pushState(null, '', `/charts/${slug}`);
+                      window.dispatchEvent(new PopStateEvent('popstate'));
+                    }}
+                  >{label}</button>
                 </li>
-              ))}
-              <li>
-                <button
-                  className="w-full text-left px-2 py-1 rounded bg-gray-900 hover:bg-gray-800 text-gray-300"
-                  onClick={() => { setActive('favorites'); setFavFilterId(null); }}
-                >Mostra tutti</button>
-              </li>
+              );
+            })}
             </ul>
           )}
         </div>
@@ -308,9 +359,9 @@ export default function Charts() {
             </div>
           </div>
         )}
-        {!detailId && active === 'price' && (
+        {!detailId && active === 'tana-della-tartaruga' && (
           <>
-            <Section title="Market Capitalization">
+            <Section title="Tana della Tartaruga">
               <ChartCard
                 id="BTC vs Domande"
                 type="line"
@@ -335,7 +386,7 @@ export default function Charts() {
                 id="BTC Line"
                 type="line"
                 title="BTC (line)"
-                data={merged.map(({date, btc}) => ({date, btc}))}
+                data={merged.map(({ date, btc }) => ({ date, btc }))}
                 dataKeys={["BTC"]}
                 colors={["#00ff00"]}
                 rightAxisKeys={[]}
@@ -345,7 +396,7 @@ export default function Charts() {
                 id="Domande Line"
                 type="line"
                 title="Domande (line)"
-                data={merged.map(({date, domande}) => ({date, domande}))}
+                data={merged.map(({ date, domande }) => ({ date, domande }))}
                 dataKeys={["Domande"]}
                 colors={["#ff0000"]}
                 rightAxisKeys={[]}

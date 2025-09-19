@@ -1,4 +1,4 @@
-import Chart from "./elements/Chart"; 
+import Chart from "./elements/Chart";
 import VideoCard from "./elements/VideoCard";
 import Screener from "./Screener";
 import { useMergedBtcDomande } from "../hooks/useMergedBtcDomande";
@@ -7,10 +7,11 @@ export default function Dashboard() {
     const mergedBtcDomande = useMergedBtcDomande();
 
     return (
-        <div className="flex h-screen w-full bg-black text-white p-4 gap-4 overflow-hidden">
+        <div className="flex min-h-screen w-full bg-black text-white p-4 gap-4 overflow-y-auto">
             {/* Colonna principale */}
             <div className="flex-1 flex flex-col gap-4">
                 <div className="flex gap-4">
+
                     <div className="flex-1">
                         <Chart
                             type="line"
@@ -19,7 +20,9 @@ export default function Dashboard() {
                             dataKeys={["BTC", "Domande"]}
                             colors={["#00ff00", "#ff0000"]}
                             rightAxisKeys={["Domande"]}
-                            height={324}
+                            height={260}
+                            isPreview
+                            to="btc-vs-domande"
                         />
                     </div>
 
@@ -31,10 +34,46 @@ export default function Dashboard() {
                             dataKeys={["BTC", "Iscritti"]}
                             colors={["#00ff00", "#ff0000"]}
                             rightAxisKeys={["Iscritti"]}
-                            height={324}
+                            height={260}
+                            isPreview
+                            to="btc-vs-domande"
                         />
                     </div>
+
                 </div>
+
+                <div className="flex gap-4">
+
+                    <div className="flex-1">
+                        <Chart
+                            type="line"
+                            title="BTC vs Domande Tana"
+                            data={mergedBtcDomande}
+                            dataKeys={["BTC", "Domande"]}
+                            colors={["#00ff00", "#ff0000"]}
+                            rightAxisKeys={["Domande"]}
+                            height={260}
+                            isPreview
+                            to="btc-vs-domande"
+                        />
+                    </div>
+
+                    <div className="flex-1">
+                        <Chart
+                            type="line"
+                            title="BTC vs Iscritti Tana"
+                            data={mergedBtcDomande}
+                            dataKeys={["BTC", "Iscritti"]}
+                            colors={["#00ff00", "#ff0000"]}
+                            rightAxisKeys={["Iscritti"]}
+                            height={260}
+                            isPreview
+                            to="btc-line"
+                        />
+                    </div>
+
+                </div>
+
             </div>
 
             {/* Colonna destra */}
