@@ -66,8 +66,11 @@ export default function Screener({ limit }) {
         setCookie('turtleai_screener_sortDir', sortDir);
     }, [sortKey, sortDir]);
 
+    const isFullPage = typeof window !== 'undefined' && window.location.pathname === '/screener';
+    const containerClass = `bg-black rounded-2xl p-3 shadow-lg ${isFullPage ? 'flex-1' : ''} border border-gray-800 theme-light:bg-white theme-light:border-gray-200`;
+
     return (
-        <div className="bg-black rounded-2xl p-3 shadow-lg flex-1 border border-gray-800 theme-light:bg-white theme-light:border-gray-200">
+        <div className={containerClass}>
             <div className="flex items-center justify-between mb-2">
                 <h2 className="text-lg font-semibold text-white theme-light:text-gray-900">Screener</h2>
                 <div className="flex items-center gap-2">

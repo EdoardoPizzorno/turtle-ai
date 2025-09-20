@@ -8,6 +8,8 @@ import Login from './components/Login.jsx';
 import Charts from './components/Charts.jsx';
 import Screener from './components/Screener.jsx';
 import Profile from './components/Profile.jsx';
+import ForgotPassword from './components/ForgotPassword.jsx';
+import ChatWidget from './components/elements/ChatWidget.jsx';
 
 export default function App() {
   const [path, setPath] = useState(window.location.pathname || '/dashboard');
@@ -28,6 +30,7 @@ export default function App() {
   if (path === '/dashboard') content = <Dashboard />;
   else if (path === '/charts' || path.startsWith('/charts/')) content = <Charts />;
   else if (path === '/login') content = <Login />;
+  else if (path === '/forgot-password') content = <ForgotPassword />;
   else if (path === '/screener') content = <Screener />;
   else if (path === '/profile') content = <Profile />;
   else content = <Dashboard />;
@@ -37,6 +40,7 @@ export default function App() {
       <Navbar />
       {content}
       <Footer />
+      <ChatWidget />
     </>
   );
 }

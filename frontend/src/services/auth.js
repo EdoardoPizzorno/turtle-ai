@@ -39,7 +39,7 @@ function normalizeMeResponse(res) {
   return { user: normalizedUser };
 }
 
-export async function getMe({ force = false } = {}) {
+export async function getMe({ force = true } = {}) {
   if (!force) {
     const cached = readMeCache();
     if (cached && typeof cached.ts === 'number' && Date.now() - cached.ts < ONE_DAY_MS) {
@@ -63,4 +63,10 @@ export function navigate(to) {
   window.dispatchEvent(new PopStateEvent('popstate'));
 }
 
+
+export async function requestPasswordReset(email) {
+  if (!email || typeof email !== 'string') throw new Error('Email richiesta');
+  const res = await api.post('/api/auth/password/forgot', { email });
+  return res || { ok: true };
+}
 

@@ -52,7 +52,7 @@ export default function Navbar() {
     navigate('/login');
   };
 
-  const isLogin = typeof window !== 'undefined' && window.location.pathname === '/login';
+  const isLogin = typeof window !== 'undefined' && (window.location.pathname === '/login' || window.location.pathname === '/forgot-password');
 
   return (
     <nav className="w-full bg-black text-gray-200 flex items-center px-6 h-14 shadow-md relative">
@@ -81,12 +81,14 @@ export default function Navbar() {
         <div className="absolute left-1/2 -translate-x-1/2 flex items-center gap-2">
           <img src="/tartaruga/LOGO.png" alt="Logo" className="h-8 object-contain" />
           <DecryptedText
-            text="TurtleAI"
-            animateOn="view"
-            revealDirection="center"
-            className="text-lg font-semibold text-white"
-            lockWidth
-          />
+              text="TurtleAI"
+              animateOn="view"
+              revealDirection="center"
+              className="text-white"
+              parentClassName="text-lg font-semibold tracking-normal leading-none"
+              fixedWidth={false}
+              lockWidth
+            />
         </div>
       )}
 
@@ -185,14 +187,14 @@ export default function Navbar() {
               </button>
               {me ? (
                 <button
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-900 flex items-center gap-2 text-red-400 hover:cursor-pointer"
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-900 flex items-center gap-2 text-red-400 cursor-pointer"
                   onClick={onLogout}
                 >
                   <LogOut className="w-4 h-4" /> Logout
                 </button>
               ) : (
                 <button
-                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-900 flex items-center gap-2"
+                  className="w-full text-left px-3 py-2 text-sm hover:bg-gray-900 flex items-center gap-2 cursor-pointer"
                   onClick={() => navigate('/login')}
                 >
                   <User className="w-4 h-4" /> Login

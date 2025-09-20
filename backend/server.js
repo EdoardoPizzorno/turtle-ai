@@ -212,6 +212,17 @@ app.post('/api/auth/logout', (req, res) => {
   });
 });
 
+// Stub endpoint per richiesta reset password
+app.post('/api/auth/password/forgot', (req, res) => {
+  const email = String(req.body?.email || '').trim();
+  if (!email) {
+    return res.status(400).json({ error: 'email_required' });
+  }
+  // In un'implementazione reale, qui si genererebbe un token e si invierebbe l'email
+  // Rispondiamo sempre ok per non rivelare se l'email esiste
+  res.json({ ok: true });
+});
+
 // Error handler
 // eslint-disable-next-line no-unused-vars
 app.use((err, req, res, next) => {

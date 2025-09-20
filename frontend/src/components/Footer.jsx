@@ -30,7 +30,7 @@ export default function Footer() {
           <div>
             <h3 className="text-white font-semibold mb-2 theme-light:text-gray-900">Contact Us</h3>
             <p className="text-sm text-gray-400 mb-2">support@turtleai.com</p>
-            <p className="text-sm text-gray-400 mb-4">+1 (555) 123-4567</p>
+            <p className="text-sm text-gray-400 mb-4">+41 123 1234 123</p>
             <div className="flex gap-4 text-sm">
               <a href="#" className="hover:text-emerald-500 transition-colors">Twitter</a>
               <a href="#" className="hover:text-emerald-500 transition-colors">LinkedIn</a>

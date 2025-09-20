@@ -20,7 +20,7 @@ export default function Dashboard() {
                             dataKeys={["BTC", "Domande"]}
                             colors={["#00ff00", "#ff0000"]}
                             rightAxisKeys={["Domande"]}
-                            height={280}
+                            height={283}
                             isPreview
                             to="btc-vs-domande"
                         />
@@ -34,7 +34,7 @@ export default function Dashboard() {
                             dataKeys={["BTC", "Iscritti"]}
                             colors={["#00ff00", "#ff0000"]}
                             rightAxisKeys={["Iscritti"]}
-                            height={280}
+                            height={283}
                             isPreview
                             to="btc-vs-domande"
                         />
@@ -52,7 +52,7 @@ export default function Dashboard() {
                             dataKeys={["BTC", "Domande"]}
                             colors={["#00ff00", "#ff0000"]}
                             rightAxisKeys={["Domande"]}
-                            height={280}
+                            height={283}
                             isPreview
                             to="btc-vs-domande"
                         />
@@ -66,7 +66,7 @@ export default function Dashboard() {
                             dataKeys={["BTC", "Iscritti"]}
                             colors={["#00ff00", "#ff0000"]}
                             rightAxisKeys={["Iscritti"]}
-                            height={280}
+                            height={283}
                             isPreview
                             to="btc-line"
                         />
@@ -83,7 +83,7 @@ export default function Dashboard() {
                     videoUrl="https://www.youtube.com/embed/isn9zalGFjs?si=zI18v5tIblPxe7R2"
                 />
 
-                <Screener limit={8} />
+                <Screener limit={6} />
             </div>
         </div>
     );

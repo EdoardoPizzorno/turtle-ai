@@ -78,7 +78,7 @@ export default function Login() {
 
           <button
             type="submit"
-            className="w-full py-2 rounded-lg font-medium text-black"
+            className="w-full py-2 rounded-lg font-medium text-black cursor-pointer"
             style={{ backgroundColor: accent }}
           >
             Entra
@@ -93,14 +93,14 @@ export default function Login() {
           <button
             type="button"
             onClick={loginWithGoogle}
-            className="w-full inline-flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-700 text-gray-200 hover:bg-gray-900"
+            className="w-full inline-flex items-center justify-center gap-2 py-2 rounded-lg border border-gray-700 text-gray-200 hover:bg-gray-900 cursor-pointer"
           >
             <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" alt="Google" className="h-4 w-4" />
             Accedi con Google
           </button>
 
           <div className="flex items-center justify-between text-xs text-gray-400">
-            <a href="#" className="hover:text-gray-200">Password dimenticata?</a>
+            <a href="/forgot-password" onClick={(e) => { e.preventDefault(); navigate('/forgot-password'); }} className="hover:text-gray-200">Password dimenticata?</a>
             <a href="#" className="hover:text-gray-200">Crea account</a>
           </div>
         </form>

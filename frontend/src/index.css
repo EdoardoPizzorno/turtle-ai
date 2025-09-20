@@ -13,6 +13,7 @@ body {
 :root {
   --bg: #000;
   --text: #e5e7eb;
+  --scrollbar: #000;
 }
 
 .theme-dark {
